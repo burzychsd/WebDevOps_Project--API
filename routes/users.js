@@ -3,6 +3,7 @@ const express	= require('express');
 const router	= express.Router(); // similar to const app in server.js
 const bcrypt	= require('bcryptjs'); // for hashing password / docs: https://github.com/dcodeIO/bcrypt.js 
 const gravatar	= require('gravatar');
+const jwt 		= require('jsonwebtoken');
 
 // LOAD USER MODEL
 const User 		= require('../models/User');
@@ -77,7 +78,17 @@ router.post('/login', (req, res) => {
 			// comparison promise
 				.then(isValid => {
 					if(isValid) {
-						res.json({ msg: 'Success' });
+						// sign jwt token, docs: https://www.npmjs.com/package/jsonwebtoken
+						// payload - basically user information assing to token
+						const payload = { id: user.id, username: user.username, avatar: user.avatar };
+						// u need to also include key for token
+						const key = process.env.TOKEN_KEY;
+						jwt.sign(payload, key, { expiresIn: 3600 }, (err, token) => {
+							res.json({ 
+								success: true,
+								token: 'Bearer ' + token // definition: https://stackoverflow.com/questions/25838183/what-is-the-oauth-2-0-bearer-token-exactly
+							})
+						});
 					} else {
 						return res.status(400).json({ password: 'Password incorrect' });
 					}
