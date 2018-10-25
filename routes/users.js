@@ -2,6 +2,7 @@
 const express	= require('express');
 const router	= express.Router(); // similar to const app in server.js
 const bcrypt	= require('bcryptjs'); // for hashing password / docs: https://github.com/dcodeIO/bcrypt.js 
+const passport	= require('passport'); // we need to use passport for creating protective route
 const gravatar	= require('gravatar');
 const jwt 		= require('jsonwebtoken');
 
@@ -13,7 +14,7 @@ const User 		= require('../models/User');
 // also, 'res.json()', as u probably know, its like res.send but it outputs json file 
 router.get('/user', (req, res) => res.json({ test: 'Works' }));
 
-//POST USER REGISTRATION ROUTE -- PUBLIC
+// POST USER REGISTRATION ROUTE -- PUBLIC
 // creation of user, sending post request
 router.post('/register', (req, res) => {
 	// check if user email exists
@@ -58,7 +59,7 @@ router.post('/register', (req, res) => {
 		.catch(err => console.log(err));
 });
 
-//POST USER LOGIN ROUTE -- PUBLIC
+// POST USER LOGIN ROUTE -- PUBLIC
 // login user with JWT TOKEN
 router.post('/login', (req, res) => {
 	const email = req.body.email;
@@ -98,5 +99,17 @@ router.post('/login', (req, res) => {
 		.catch(err => console.log(err));
 });
 
+// GET LOGGED USER ROUTE -- PRIVATE
+// 'jwt' - it's an strategy which we're using
+// more info about authentication process docs: http://www.passportjs.org/docs/
+router.get('/current', passport.authenticate('jwt', { session: false }), (req, res) => {
+	// because we returned user object in jwtStrategy, we can now access that object and return our own without passport
+	res.json({
+		id: req.user.id,
+		username: req.user.username,
+		email: req.user.email,
+		date: req.user.date
+	});
+});
 
 module.exports = router;
