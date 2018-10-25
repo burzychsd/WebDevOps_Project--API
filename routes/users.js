@@ -6,8 +6,11 @@ const passport	= require('passport'); // we need to use passport for creating pr
 const gravatar	= require('gravatar');
 const jwt 		= require('jsonwebtoken');
 
+// LOAD FORM VALIDATION
+const registerValidation = require('../validation/registerForm');
+
 // LOAD USER MODEL
-const User 		= require('../models/User');
+const User = require('../models/User');
 
 // GET USERS ROUTE -- PUBLIC
 // u don't need to include previous path '/users' from server.js, just the next part
@@ -17,6 +20,12 @@ router.get('/user', (req, res) => res.json({ test: 'Works' }));
 // POST USER REGISTRATION ROUTE -- PUBLIC
 // creation of user, sending post request
 router.post('/register', (req, res) => {
+	// validate req.body
+	const { errorsMsgs, isValid } = registerValidation(req.body);
+
+	if(!isValid) {
+		return res.status(400).json(errorsMsgs);
+	}
 	// check if user email exists
 	User.findOne({ email: req.body.email })
 		.then(user => {
@@ -24,7 +33,8 @@ router.post('/register', (req, res) => {
 			if(user) {
 				// if user exists, then we're throwing error message, like 'Email already exists'
 				// the status of that http request is 400
-				return res.status(400).json({ email: 'Email already exists' });
+				errorsMsgs.email = 'Email already exists'; 
+				return res.status(400).json(errorsMsgs);
 			} else {
 				// u can check the docs here: https://www.npmjs.com/package/gravatar
 				const avatar = gravatar.url(req.body.email, {s: '100', r: 'pg', d: 'mm'});
