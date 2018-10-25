@@ -48,7 +48,7 @@ router.post('/register', (req, res) => {
 						newUser.password = hash;
 						// and now we're saving new User to db, using mongoose
 						newUser.save()
-							.then(user => res.json())
+							.then(user => res.json(user))
 							.catch(err => console.log(err));
 					});
 				});
@@ -57,6 +57,35 @@ router.post('/register', (req, res) => {
 		.catch(err => console.log(err));
 });
 
+//POST USER LOGIN ROUTE -- PUBLIC
+// login user with JWT TOKEN
+router.post('/login', (req, res) => {
+	const email = req.body.email;
+	const password = req.body.password;
+
+	// Find user by email
+	User.findOne({ email })
+		.then(user => {
+			// Checking user
+			if(!user) {
+				res.status(404).json({ email: 'User not found' })
+			}
+		
+			// Checking password
+			// method from bcrypt docs / user.password is the password hash from user
+			bcrypt.compare(password, user.password)
+			// comparison promise
+				.then(isValid => {
+					if(isValid) {
+						res.json({ msg: 'Success' });
+					} else {
+						return res.status(400).json({ password: 'Password incorrect' });
+					}
+				})
+				.catch(err => console.log(err));
+		})
+		.catch(err => console.log(err));
+});
 
 
 module.exports = router;
