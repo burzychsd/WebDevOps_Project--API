@@ -1,6 +1,8 @@
 // USERS ROUTES
 const express	= require('express');
 const router	= express.Router(); // similar to const app in server.js
+const bcrypt	= require('bcryptjs'); // for hashing password / docs: https://github.com/dcodeIO/bcrypt.js 
+const gravatar	= require('gravatar');
 
 // LOAD USER MODEL
 const User 		= require('../models/User');
@@ -20,10 +22,10 @@ router.post('/register', (req, res) => {
 			if(user) {
 				// if user exists, then we're throwing error message, like 'Email already exists'
 				// the status of that http request is 400
-				res.status(400).json({ email: 'Email already exists' });
+				return res.status(400).json({ email: 'Email already exists' });
 			} else {
 				// u can check the docs here: https://www.npmjs.com/package/gravatar
-				const avatar = gravatar.url(res.body.email, {s: '100', r: 'pg', d: 'mm'});
+				const avatar = gravatar.url(req.body.email, {s: '100', r: 'pg', d: 'mm'});
 				// if email is valid, we're creating new user
 				// when u wanna enter new data to your db(mongoDB) u just pass the object with your data to 'new User()',
 				// where User is your model's name // 'req.body' part comes with body-parser, which refers to your frontend form
@@ -35,8 +37,24 @@ router.post('/register', (req, res) => {
 					// I found few tutorials on implementing that, it's quite popular, so I thought 'why not'
 					avatar
 				});
+
+				// salt generation
+				// it's an async method, which u can find in docs
+				const salt = bcrypt.genSalt(10, (err, salt) => {
+					// hash
+					bcrypt.hash(newUser.password, salt, (err, hash) => {
+						if(err) throw error;
+						// if error wasn't found, then we're hashing that new created password
+						newUser.password = hash;
+						// and now we're saving new User to db, using mongoose
+						newUser.save()
+							.then(user => res.json())
+							.catch(err => console.log(err));
+					});
+				});
 			}
 		})
+		.catch(err => console.log(err));
 });
 
 
