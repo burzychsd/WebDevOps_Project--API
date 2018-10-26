@@ -6,24 +6,39 @@ module.exports = function validateRegisterInput(input) {
 	// Messages if error occurs
 	let errorsMsgs = {};
 
-	if(!validator.matches(input.username, /(?!^[0-9]*$)(?!^[a-zA-Z]*$)^([a-zA-Z0-9]{6,15})$/)) {
-		errorsMsgs.username = 'Username must be at least one number, one letter, and be between 6-15 character in length';
-	}
+	const fields = ['username', 'email', 'password', 'password2']; // password2 is just the confirmation of the first password
+	const fields2 = ['username', 'password'];
 
-	if(validator.isEmpty(input.username)) {
-		errorsMsgs.username = 'Username can\'t be empty';
-	}
+	// Making sure, that we're passing empty string if the field is empty
+	fields.forEach((field) => {
+		input[field] = !isEmpty(input[field]) ? input[field] : '';
+	});
 
+	// Chech if isEmpty
+	fields.forEach((field) => {
+		if(validator.isEmpty(input[field])) {
+			errorsMsgs[field] = field !== 'password2' ? 
+			field.charAt(0).toUpperCase() + field.substring(1, ) + ' field is required' : 
+			'Confirm Password'
+		}
+	});
+
+	// Check if matches
+	fields2.forEach((field) => {
+		if(!validator.matches(input[field], /(?!^[0-9]*$)(?!^[a-zA-Z]*$)^([a-zA-Z0-9]{6,15})$/)) {
+			input[field] !== '' ? errorsMsgs[field] = field.charAt(0).toUpperCase() + field.substring(1, ) + 
+			' must be at least one number, one letter, and be between 6-15 character in length' : null
+		}
+	});
+
+	// Check if email is valid
 	if(!validator.isEmail(input.email)) {
-		errorsMsgs.email = 'Your email is incorrect, try again';
+		errorsMsgs.email = 'Email must be valid';
 	}
 
-	if(validator.isEmpty(input.email)) {
-		errorsMsgs.email = 'Please, enter your valid email';
-	}
-
-	if(!validator.matches(input.password, /(?!^[0-9]*$)(?!^[a-zA-Z]*$)^([a-zA-Z0-9]{6,15})$/)) {
-		errorsMsgs.password = 'Username must be at least one number, one letter, and be between 6-15 character in length';
+	// Check if password equals password2
+	if(!validator.equals(input.password, input.password2)) {
+		errorsMsgs.password2 = 'Passwords must match';
 	}
 
 	// we wanna check if isValid is empty or not, we cant use validator method 'isEmpty'
