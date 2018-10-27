@@ -29,7 +29,7 @@ app.use(passport.initialize());
 require('./config/passport')(passport);
 
 // ROUTES SETUP
-app.use('/users', users);
+app.use('/api', users);
 
 // SERVER SETUP
 const port = process.env.PORT || 3001;
