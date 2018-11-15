@@ -19,6 +19,10 @@ const UserSchema = new Schema({
 	avatar: {
 		type: String // previous it was set to true, we shouldn't do that
 	},
+	notes: [{
+		type: Schema.Types.ObjectId,
+		ref: 'notes'
+	}],
 	date: {
 		type: Date,
 		default: Date.now
