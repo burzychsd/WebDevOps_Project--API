@@ -127,6 +127,7 @@ router.get('/current', passport.authenticate('jwt', { session: false }), (req, r
 		id: req.user.id,
 		username: req.user.username,
 		email: req.user.email,
+		notes: req.user.notes,
 		date: req.user.date
 	});
 });
