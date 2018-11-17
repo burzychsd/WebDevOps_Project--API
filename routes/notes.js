@@ -8,10 +8,10 @@ const Note = require('../models/Note');
 const User = require('../models/User');
 const Person = require('../models/Person');
 
-// GET ALL NOTES -- PUBLIC
+// GET ALL USER NOTES -- PRIVATE
 // for fetching all notes from db
-router.get('/notes', (req, res) => {
-	Note.find()
+router.get('/notes', passport.authenticate('jwt', { session: false }), (req, res) => {
+	Note.find({ user: req.user.id })
 	.sort({ date: -1 })
 	.then(notes => {
 		if(notes.length === 0) {
@@ -23,9 +23,9 @@ router.get('/notes', (req, res) => {
 	.catch(err => res.status(404).json({ notes: 'No notes found' }));
 });
 
-// GET SPECIFIC NOTE -- PUBLIC
+// GET SPECIFIC NOTE -- PRIVATE
 // for fetching specific note from db
-router.get('/notes/:id', (req, res) => {
+router.get('/notes/:id', passport.authenticate('jwt', { session: false }), (req, res) => {
 	Note.findById(req.params.id)
 	.then(note => {
 		if(!note) {
