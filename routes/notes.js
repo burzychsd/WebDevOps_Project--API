@@ -8,7 +8,36 @@ const Note = require('../models/Note');
 const User = require('../models/User');
 const Person = require('../models/Person');
 
-// POST NOTE REGISTRATION ROUTE -- PRIVATE
+// GET ALL NOTES -- PUBLIC
+// for fetching all notes from db
+router.get('/notes', (req, res) => {
+	Note.find()
+	.sort({ date: -1 })
+	.then(notes => {
+		if(notes.length === 0) {
+			return res.status(404).json({ notes: 'No notes found' });
+		}
+		res.json(notes);
+
+	})
+	.catch(err => res.status(404).json({ notes: 'No notes found' }));
+});
+
+// GET SPECIFIC NOTE -- PUBLIC
+// for fetching specific note from db
+router.get('/notes/:id', (req, res) => {
+	Note.findById(req.params.id)
+	.then(note => {
+		if(!note) {
+			return res.status(404).json({ note: 'There is no note with this ID' });
+		}
+		res.json(note);
+
+	})
+	.catch(err => res.status(404).json({ note: 'There is no note with this ID' }));
+});
+
+// POST NOTE ROUTE -- PRIVATE
 // creation of note, sending post request
 router.post('/notes', passport.authenticate('jwt', { session: false }), (req, res) => {
 
