@@ -23,4 +23,8 @@ router.get('/notes/:id', passport.authenticate('jwt', { session: false }), Notes
 // creation of note, sending post request
 router.post('/notes', passport.authenticate('jwt', { session: false }), NotesControllers.post_note);
 
+// DELETE NOTE ROUTE -- PRIVATE
+// deleting the specific note
+router.delete('/notes/:id', passport.authenticate('jwt', { session: false }), NotesControllers.delete_note);
+
 module.exports = router;

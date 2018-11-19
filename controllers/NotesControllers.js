@@ -51,3 +51,20 @@ exports.post_note = function(req, res) {
 		});
 	});
 }
+
+// DELETING NOTE
+exports.delete_note = function(req, res) {
+	Note.findOneAndDelete({ _id: req.params.id, user: req.user.id })
+	.then(note => {
+		if(note) {
+			User.findById({ _id: req.user.id }, function(err, user) {
+				if (err) return handleError(err);
+				user.notes.splice(user.notes.indexOf(note._id));
+				user.save();
+			});
+			res.status(200).json({ msg: 'Deleted' })
+		} else {
+			res.status(404).json({ note: 'There is no note with this ID' })
+		}
+	}).catch(err => console.log(err));
+}
