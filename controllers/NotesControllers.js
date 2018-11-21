@@ -1,6 +1,6 @@
 // GETTING ALL NOTES
 exports.get_all_notes = function(req, res) {
-	Note.find({ user: req.user.id }).sort({ date: -1 }).then(notes => {
+	Note.find({ user: req.user.id }).sort('-date').then(notes => {
 		if(notes.length === 0) {
 			return res.status(404).json({ notes: 'No notes found' });
 		}
@@ -30,9 +30,9 @@ exports.post_note = function(req, res) {
 	const newNote = new Note({
 		user: req.user.id,
 		title,
-		text,
-		alarm,
-		color
+		text
+		// alarm,
+		// color
 	});
 	newNote.save();
 

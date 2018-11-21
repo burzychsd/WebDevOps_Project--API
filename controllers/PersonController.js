@@ -22,10 +22,10 @@ exports.check_if_person_exists = function(obj, arrOfPersons, newPerson) {
 	Person.findOne({ email: obj[person]["email"] }).exec(function(err, person) {
 		if (err) return handleError(err);
 		if (person) {
-			arrOfPersons.push(person);
+			arrOfPersons.push(person._id);
 		} else {
 			newPerson.save();
-			arrOfPersons.push(newPerson);
+			arrOfPersons.push(newPerson._id);
 		}
 	});
 };
