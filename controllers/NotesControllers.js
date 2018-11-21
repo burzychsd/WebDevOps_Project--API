@@ -1,6 +1,6 @@
 // GETTING ALL NOTES
 exports.get_all_notes = function(req, res) {
-	Note.find({ user: req.user.id }).sort('-date').then(notes => {
+	Note.find({ user: req.user.id }).sort({ date: 'desc' }).then(notes => {
 		if(notes.length === 0) {
 			return res.status(404).json({ notes: 'No notes found' });
 		}
