@@ -30,13 +30,12 @@ exports.post_note = function(req, res) {
 	const newNote = new Note({
 		user: req.user.id,
 		title,
-		text
-		// alarm,
-		// color
+		text,
+		alarm
 	});
 	newNote.save();
 
-	PersonController.create_person(name, email, PersonController.check_if_person_exists);
+	PersonController.create_person(JSON.parse(name), JSON.parse(email), PersonController.check_if_person_exists);
 
 	User.findOne({ _id: req.user.id }).populate('notes').exec(function(err, user) {
 		if (err) return handleError(err);
