@@ -31,7 +31,8 @@ exports.post_note = function(req, res) {
 		user: req.user.id,
 		title,
 		text,
-		alarm
+		alarm,
+		color
 	});
 	newNote.save();
 
