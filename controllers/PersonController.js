@@ -1,7 +1,6 @@
 // CREATING PERSON 
-exports.create_person = function(name, email, checkIfExist) {
+exports.create_person = function(name, email, arrOfPersons, checkIfExist) {
 	const obj = {}
-	let = arrOfPersons = [];
 
 	if (name && email) {
 
