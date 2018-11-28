@@ -1,5 +1,6 @@
 // CONFIG SETUP
 const express 		= require('express');
+const cors 			= require('cors')
 const dotenv 		= require('dotenv/config');
 const mongoose		= require('mongoose');
 const bodyParser 	= require('body-parser');
@@ -8,6 +9,9 @@ const users 		= require('./routes/users');
 const notes			= require('./routes/notes');
 
 const app = express();
+
+// CORS
+app.use(cors());
 
 // BODY-PARSER MIDDLEWARE CONFIG
 // Parse incoming request bodies in a middleware before your handlers, available under the req.body property.
