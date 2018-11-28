@@ -1,6 +1,6 @@
 // GETTING ALL NOTES
 exports.get_all_notes = function(req, res) {
-	Note.find({ user: req.user.id }).sort({ date: 'desc' }).then(notes => {
+	Note.find({ user: req.user.id, archive: false, delete: false }).sort({ date: 'desc' }).then(notes => {
 		if(notes.length === 0) {
 			return res.status(404).json({ notes: 'No notes found' });
 		}
@@ -17,6 +17,26 @@ exports.get_specific_note = function(req, res) {
 		res.json(note);
 	}).catch(err => res.status(404).json({ note: 'There is no note with this ID' }));
 };
+
+// GETTING NOTES FOR ARCHIVE
+exports.get_archive_notes = function(req, res) {
+	Note.find({ user: req.user.id, archive: true }).then(notes => {
+		if(notes.length === 0) {
+			return res.status(404).json({ notes: 'No notes found' });
+		}
+		res.json(notes);
+	}).catch(err => res.status(404).json({ notes: 'No notes found' }));
+}
+
+// GETTING NOTES FOR DELETE
+exports.get_delete_notes = function(req, res) {
+	Note.find({ user: req.user.id, delete: true }).then(notes => {
+		if(notes.length === 0) {
+			return res.status(404).json({ notes: 'No notes found' });
+		}
+		res.json(notes);
+	}).catch(err => res.status(404).json({ notes: 'No notes found' }));
+}
 
 // POSTING NOTE 
 //LOAD PERSON CONTROLLER & MOMENT PACKAGE
@@ -51,6 +71,42 @@ exports.post_note = function(req, res) {
 			.catch(err => console.log(err));
 		});
 	});
+}
+
+// UPDATING NOTE (ARCHIVE)
+exports.update_note_archive = function(req, res) {
+	const { archive } = req.body;
+
+	console.log(archive)
+
+	Note.findById({ _id: req.params.id, user: req.user.id }, function(err, note) {
+		if (err) return handleError(err);
+
+		note.archive = Boolean(archive);
+		note.save(function(err, updatedNote) {
+			if (err) return handleError(err);
+			res.status(200).json({ msg: 'Note moved to Archive' });
+		});
+	});
+}
+
+// UPDATING NOTE (DELETE)
+exports.update_note_delete = function(req, res) {
+	const { deleted } = req.body;
+
+	if (deleted) {
+		Note.findById({ _id: req.params.id, user: req.user.id }, function(err, note) {
+			if (err) return handleError(err);
+
+			note.delete = deleted;
+			note.save(function(err, updatedNote) {
+				if (err) return handleError(err);
+				res.json(res.status(200).json({ msg: 'Note moved to Bin' }));
+			});
+		});
+	} else {
+		res.status(400).json({ msg: 'Something went wrong. Try again.' });
+	}
 }
 
 // DELETING NOTE
