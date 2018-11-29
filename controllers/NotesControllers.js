@@ -73,40 +73,26 @@ exports.post_note = function(req, res) {
 	});
 }
 
-// UPDATING NOTE (ARCHIVE)
-exports.update_note_archive = function(req, res) {
-	const { archive } = req.body;
-
-	console.log(archive)
-
+// UPDATING NOTE (ARCHIVE & DELETE)
+exports.update_note_archive_delete = function(req, res) {
+	const { archive, deleted } = req.body;
+	
 	Note.findById({ _id: req.params.id, user: req.user.id }, function(err, note) {
 		if (err) return handleError(err);
+		
+		if (archive) {
+			note.archive = archive;
+		}
 
-		note.archive = Boolean(archive);
+		if (deleted) {
+			note.delete = deleted;
+		}
+
 		note.save(function(err, updatedNote) {
 			if (err) return handleError(err);
-			res.status(200).json({ msg: 'Note moved to Archive' });
+			res.status(200).json({ msg: `${archive ? 'Note moved to Archive' : 'Note moved to Bin'}` });
 		});
 	});
-}
-
-// UPDATING NOTE (DELETE)
-exports.update_note_delete = function(req, res) {
-	const { deleted } = req.body;
-
-	if (deleted) {
-		Note.findById({ _id: req.params.id, user: req.user.id }, function(err, note) {
-			if (err) return handleError(err);
-
-			note.delete = deleted;
-			note.save(function(err, updatedNote) {
-				if (err) return handleError(err);
-				res.json(res.status(200).json({ msg: 'Note moved to Bin' }));
-			});
-		});
-	} else {
-		res.status(400).json({ msg: 'Something went wrong. Try again.' });
-	}
 }
 
 // DELETING NOTE

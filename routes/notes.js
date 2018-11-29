@@ -33,11 +33,11 @@ router.post('/notes', passport.authenticate('jwt', { session: false }), NotesCon
 
 // PUT NOTE ROUTE (ARCHIVE) -- PRIVATE
 // updating note
-router.put('/notes/archive/:id', passport.authenticate('jwt', { session: false }), NotesControllers.update_note_archive);
+router.put('/notes/archive/:id', passport.authenticate('jwt', { session: false }), NotesControllers.update_note_archive_delete);
 
 // PUT NOTE ROUTE (DELETE) -- PRIVATE
 // updating note
-router.put('/notes/delete/:id', passport.authenticate('jwt', { session: false }), NotesControllers.update_note_delete)
+router.put('/notes/delete/:id', passport.authenticate('jwt', { session: false }), NotesControllers.update_note_archive_delete)
 
 // DELETE NOTE ROUTE -- PRIVATE
 // deleting the specific note
