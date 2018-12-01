@@ -57,7 +57,7 @@ exports.post_note = function(req, res) {
 	});
 	newNote.save();
 
-	PersonController.create_person(JSON.parse(name), JSON.parse(email), arrOfPersons, PersonController.check_if_person_exists);
+	PersonController.create_person(req.user.id, JSON.parse(name), JSON.parse(email), arrOfPersons, PersonController.check_if_person_exists);
 
 	User.findOne({ _id: req.user.id }).populate('notes').exec(function(err, user) {
 		if (err) return handleError(err);

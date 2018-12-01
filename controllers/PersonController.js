@@ -1,5 +1,18 @@
+// LOAD PERSON MODEL
+const Person 	= require('../models/Person');
+
+// GET ALL PERSONS
+exports.get_all_persons = function(req, res) {
+	Person.find({ user: req.user.id }).then(persons => {
+		if(persons.length === 0) {
+			return res.status(404).json({ persons: 'No persons found' });
+		}
+		res.json(persons);
+	}).catch(err => res.status(404).json({ persons: 'No persons found' }));
+}
+
 // CREATING PERSON 
-exports.create_person = function(name, email, arrOfPersons, checkIfExist) {
+exports.create_person = function(userId, name, email, arrOfPersons, checkIfExist) {
 	const obj = {}
 
 	if (name && email) {
@@ -8,6 +21,7 @@ exports.create_person = function(name, email, arrOfPersons, checkIfExist) {
 
 		for(person in obj) {
 			const newPerson = new Person({
+				user: userId,
 				name: obj[person]["name"],
 				email: obj[person]["email"]
 			});
