@@ -23,6 +23,10 @@ router.get('/notes/archive', passport.authenticate('jwt', { session: false }), N
 // for fetching archive notes from db
 router.get('/notes/delete', passport.authenticate('jwt', { session: false }), NotesControllers.get_delete_notes);
 
+// GET ALL REMINDERS NOTES -- PRIVATE
+// for fetching reminders notes from db
+router.get('/notes/reminders', passport.authenticate('jwt', { session: false }), NotesControllers.get_reminders_notes);
+
 // GET SPECIFIC NOTE -- PRIVATE
 // for fetching specific note from db
 router.get('/notes/:id', passport.authenticate('jwt', { session: false }), NotesControllers.get_specific_note);
@@ -33,11 +37,15 @@ router.post('/notes', passport.authenticate('jwt', { session: false }), NotesCon
 
 // PUT NOTE ROUTE (ARCHIVE) -- PRIVATE
 // updating note
-router.put('/notes/archive/:id', passport.authenticate('jwt', { session: false }), NotesControllers.update_note_archive_delete);
+router.put('/notes/archive/:id', passport.authenticate('jwt', { session: false }), NotesControllers.update_note_archive_delete_reminders);
 
 // PUT NOTE ROUTE (DELETE) -- PRIVATE
 // updating note
-router.put('/notes/delete/:id', passport.authenticate('jwt', { session: false }), NotesControllers.update_note_archive_delete)
+router.put('/notes/delete/:id', passport.authenticate('jwt', { session: false }), NotesControllers.update_note_archive_delete_reminders);
+
+// PUT NOTE ROUTE (REMINDERS) -- PRIVATE
+// updating note
+router.put('/notes/reminders/:id', passport.authenticate('jwt', { session: false }), NotesControllers.update_note_archive_delete_reminders);
 
 // DELETE NOTE ROUTE -- PRIVATE
 // deleting the specific note

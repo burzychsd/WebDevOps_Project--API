@@ -38,6 +38,16 @@ exports.get_delete_notes = function(req, res) {
 	}).catch(err => res.status(404).json({ notes: 'No notes found' }));
 }
 
+// GETTING NOTES FOR REMINDERS
+exports.get_reminders_notes = function(req, res) {
+	Note.find({ user: req.user.id, alarm: { $type: 9 } }).then(notes => {
+		if(notes.length === 0) {
+			return res.status(404).json({ notes: 'No notes found' });
+		}
+		res.json(notes);
+	}).catch(err => res.status(404).json({ notes: 'No notes found' }));
+}
+
 // POSTING NOTE 
 //LOAD PERSON CONTROLLER & MOMENT PACKAGE
 const PersonController 	= require('./PersonController');
@@ -73,9 +83,9 @@ exports.post_note = function(req, res) {
 	});
 }
 
-// UPDATING NOTE (ARCHIVE & DELETE)
-exports.update_note_archive_delete = function(req, res) {
-	const { archive, deleted } = req.body;
+// UPDATING NOTE (ARCHIVE & DELETE & REMINDERS)
+exports.update_note_archive_delete_reminders = function(req, res) {
+	const { archive, deleted, alarm } = req.body;
 	
 	Note.findById({ _id: req.params.id, user: req.user.id }, function(err, note) {
 		if (err) return handleError(err);
@@ -88,9 +98,14 @@ exports.update_note_archive_delete = function(req, res) {
 			note.delete = deleted;
 		}
 
+		if (alarm === '') {
+			note.alarm = alarm;
+		}
+
 		note.save(function(err, updatedNote) {
 			if (err) return handleError(err);
-			res.status(200).json({ msg: `${archive ? 'Note moved to Archive' : 'Note moved to Bin'}` });
+			res.status(200).json({ msg: `${archive ? 'Note moved to Archive' : 
+				alarm ? 'Alarm has been cancelled' : 'Note moved to Bin'}` });
 		});
 	});
 }
