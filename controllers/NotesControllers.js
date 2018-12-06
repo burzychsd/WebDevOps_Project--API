@@ -83,6 +83,50 @@ exports.post_note = function(req, res) {
 	});
 }
 
+// UPDATING NOTE
+exports.update_note = function(req, res) {
+	const { title, text, color, updatedNames, updatedEmails, newNames, newEmails, keys } = req.body;
+	let { alarm } = req.body;
+	alarm ? alarm = moment(alarm).toISOString(true) : null;
+	let arrOfPersons = [];
+
+	if(newNames && newEmails) {
+		PersonController.create_person(req.user.id, 
+			JSON.parse(newNames), JSON.parse(newEmails), 
+			arrOfPersons, PersonController.check_if_person_exists);
+	}
+
+	Note.findById({ _id: req.params.id, user: req.user.id }).exec(function(err, note) {
+		if(err) return handleError(err);
+		note.title = title;
+		note.text = text;
+		note.alarm = alarm;
+		note.color = color;
+
+		if(updatedNames && updatedEmails) {
+			JSON.parse(keys).forEach(key => {
+				const regex = new RegExp(/\d+/);
+				const index = Number(regex.exec(key)[0]);
+				Person.findById({ _id: note.persons[index] }, function(err, person) {
+					if(err) return handleError(err);
+					person.name = JSON.parse(updatedNames)[index];
+					person.email = JSON.parse(updatedEmails)[index];
+					person.save();
+				});
+			});
+		}
+
+		if(newNames && newEmails) {
+			note.persons = [...note.persons, ...arrOfPersons];
+		}
+
+		note.save(function(err, updatedNote) {
+			if (err) return handleError(err);
+			res.status(200).json({ msg: 'Note has been updated' });
+		});
+	});
+}
+
 // UPDATING NOTE (ARCHIVE & DELETE & REMINDERS)
 exports.update_note_archive_delete_reminders = function(req, res) {
 	const { archive, deleted, alarm } = req.body;

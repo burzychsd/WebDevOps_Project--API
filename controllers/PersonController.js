@@ -14,13 +14,14 @@ exports.get_all_persons = function(req, res) {
 // CREATING PERSON 
 exports.create_person = function(userId, name, email, arrOfPersons, checkIfExist) {
 	const obj = {}
+	let newPerson;
 
 	if (name && email) {
 
 		name.forEach((el, i) => obj[el] = { name: el, email: email[i] });
 
 		for(person in obj) {
-			const newPerson = new Person({
+			newPerson = new Person({
 				user: userId,
 				name: obj[person]["name"],
 				email: obj[person]["email"]

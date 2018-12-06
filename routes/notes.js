@@ -35,6 +35,10 @@ router.get('/notes/:id', passport.authenticate('jwt', { session: false }), Notes
 // creation of note, sending post request
 router.post('/notes', passport.authenticate('jwt', { session: false }), NotesControllers.post_note);
 
+// PUT NOTE ROUTE -- PRIVATE
+// updating note
+router.put('/notes/:id', passport.authenticate('jwt', { session: false }), NotesControllers.update_note);
+
 // PUT NOTE ROUTE (ARCHIVE) -- PRIVATE
 // updating note
 router.put('/notes/archive/:id', passport.authenticate('jwt', { session: false }), NotesControllers.update_note_archive_delete_reminders);
