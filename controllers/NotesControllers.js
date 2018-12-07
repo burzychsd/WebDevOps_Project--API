@@ -51,12 +51,12 @@ exports.get_reminders_notes = function(req, res) {
 // POSTING NOTE 
 //LOAD PERSON CONTROLLER & MOMENT PACKAGE
 const PersonController 	= require('./PersonController');
-const moment 			= require('moment'); // for alarm data / docs: http://momentjs.com/docs/#/displaying/as-iso-string/
+const moment 			= require('moment-timezone'); // for alarm data / docs: http://momentjs.com/docs/#/displaying/as-iso-string/
 
 exports.post_note = function(req, res) {
 	let { title, text, alarm, color, name, email } = req.body;
 	let arrOfPersons = [];
-	alarm ? alarm = moment(alarm).toISOString(true) : null;
+	alarm ? alarm = moment.tz(alarm, "Europe/London").format('YYYY-MM-DD HH:mm ZZ') : null;
 
 	const newNote = new Note({
 		user: req.user.id,
@@ -87,7 +87,7 @@ exports.post_note = function(req, res) {
 exports.update_note = function(req, res) {
 	const { title, text, color, updatedNames, updatedEmails, newNames, newEmails, keys } = req.body;
 	let { alarm } = req.body;
-	alarm ? alarm = moment(alarm).toISOString(true) : null;
+	alarm ? alarm = moment.tz(alarm, "Europe/London").format('YYYY-MM-DD HH:mm ZZ') : null;
 	let arrOfPersons = [];
 
 	if(newNames && newEmails) {
