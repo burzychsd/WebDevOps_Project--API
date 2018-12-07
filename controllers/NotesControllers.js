@@ -54,7 +54,7 @@ const PersonController 	= require('./PersonController');
 const moment 			= require('moment-timezone'); // for alarm data / docs: http://momentjs.com/docs/#/displaying/as-iso-string/
 
 exports.post_note = function(req, res) {
-	let { title, text, alarm, color, name, email } = req.body;
+	let { title, text, alarm, color, name, email, list } = req.body;
 	let arrOfPersons = [];
 	alarm ? alarm = moment.tz(alarm, "Europe/London").format('YYYY-MM-DD HH:mm ZZ') : null;
 
@@ -63,7 +63,8 @@ exports.post_note = function(req, res) {
 		title,
 		text,
 		alarm,
-		color
+		color,
+		list: JSON.parse(list)
 	});
 	newNote.save();
 
