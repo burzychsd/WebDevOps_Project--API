@@ -20,6 +20,10 @@ const NoteSchema = new Schema({
 	alarm: {
 		type: Date
 	},
+	list: {
+		type: Array,
+		default: []
+	},
 	persons: [{
 		type: Schema.Types.ObjectId,
 		ref: 'persons'

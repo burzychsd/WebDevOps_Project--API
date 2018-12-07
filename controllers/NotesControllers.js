@@ -1,6 +1,6 @@
 // GETTING ALL NOTES
 exports.get_all_notes = function(req, res) {
-	Note.find({ user: req.user.id, archive: false, delete: false }).sort({ date: 'desc' }).then(notes => {
+	Note.find({ user: req.user.id, archive: false, delete: false }).then(notes => {
 		if(notes.length === 0) {
 			return res.status(404).json({ notes: 'No notes found' });
 		}
@@ -73,7 +73,7 @@ exports.post_note = function(req, res) {
 		if (err) return handleError(err);
 		user.notes.push(newNote);
 		user.save();
-		Note.findOne({ _id: user.notes.slice(-1).pop()._id }).populate('persons').exec(function(err, note) {
+		Note.findOne({ _id: user.notes[user.notes.length - 1]._id }).populate('persons').exec(function(err, note) {
 			if (err) return handleError(err);
 			note.persons = arrOfPersons;
 			note.save()
