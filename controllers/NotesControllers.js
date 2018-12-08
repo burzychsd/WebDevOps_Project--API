@@ -86,8 +86,8 @@ exports.post_note = function(req, res) {
 
 // UPDATING NOTE
 exports.update_note = function(req, res) {
-	const { title, text, color, updatedNames, updatedEmails, newNames, newEmails, keys } = req.body;
-	let { alarm } = req.body;
+	const { title, text, color, updatedNames, updatedEmails, newNames, newEmails, keys, newList } = req.body;
+	let { alarm, list } = req.body;
 	alarm ? alarm = moment.tz(alarm, "Europe/London").format('YYYY-MM-DD HH:mm ZZ') : null;
 	let arrOfPersons = [];
 
@@ -103,6 +103,16 @@ exports.update_note = function(req, res) {
 		note.text = text;
 		note.alarm = alarm;
 		note.color = color;
+
+		if(!JSON.parse(list)[0]) {
+			list = [];
+		}
+
+		note.list = list.length === 0 ? list : JSON.parse(list);
+
+		if(newList) {
+			note.list = note.list.concat(JSON.parse(newList));
+		}
 
 		if(updatedNames && updatedEmails) {
 			JSON.parse(keys).forEach(key => {
