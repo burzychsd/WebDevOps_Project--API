@@ -1,11 +1,18 @@
 // GETTING ALL NOTES
 exports.get_all_notes = function(req, res) {
-	Note.find({ user: req.user.id, archive: false, delete: false }).then(notes => {
+	const { search } = req.query;
+	let noMatch = '';
+	const condition = search && Boolean(search);
+	const regex = condition ? new RegExp(escapeRegex(search), 'gi') : null;
+	const data = condition ? { title: regex } : { archive: false, delete: false };
+
+	Note.find({ user: req.user.id, ...data }).then(notes => {
 		if(notes.length === 0) {
-			return res.status(404).json({ notes: 'No notes found' });
+			noMatch = 'Nothing Match your query'
+			return condition ? res.status(404).json({ error: noMatch }) : res.status(404).json({ notes: 'No notes found' });
 		}
-		res.json(notes);
-	}).catch(err => res.status(404).json({ notes: 'No notes found' }));
+		res.json({ notes, msg: noMatch });
+	}).catch(err => condition ? res.status(404).json({ error: noMatch }) : res.status(404).json({ notes: 'No notes found' }));
 };
 
 // GETTING SPECIFIC NOTE
@@ -181,3 +188,8 @@ exports.delete_note = function(req, res) {
 		}
 	}).catch(err => console.log(err));
 }
+
+// helpers function
+const escapeRegex = (text) => {
+    return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+};
