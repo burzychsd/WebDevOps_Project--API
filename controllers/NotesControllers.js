@@ -122,16 +122,18 @@ exports.update_note = function(req, res) {
 		}
 
 		if(updatedNames && updatedEmails) {
-			JSON.parse(keys).forEach(key => {
-				const regex = new RegExp(/\d+/);
-				const index = Number(regex.exec(key)[0]);
-				Person.findById({ _id: note.persons[index] }, function(err, person) {
-					if(err) return handleError(err);
-					person.name = JSON.parse(updatedNames)[index];
-					person.email = JSON.parse(updatedEmails)[index];
-					person.save();
+			if(keys) {
+				JSON.parse(keys).forEach(key => {
+					const regex = new RegExp(/\d+/);
+					const index = Number(regex.exec(key)[0]);
+					Person.findById({ _id: note.persons[index] }, function(err, person) {
+						if(err) return handleError(err);
+						person.name = JSON.parse(updatedNames)[index];
+						person.email = JSON.parse(updatedEmails)[index];
+						person.save();
+					});
 				});
-			});
+			}
 		}
 
 		if(newNames && newEmails) {
