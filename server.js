@@ -17,7 +17,6 @@ app.use(cors());
 // BODY-PARSER MIDDLEWARE CONFIG
 // Parse incoming request bodies in a middleware before your handlers, available under the req.body property.
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
 
 // DB CONFIG
 const db = require('./config/db_connection').url;
